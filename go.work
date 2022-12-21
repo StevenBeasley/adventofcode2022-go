@@ -1,6 +1,7 @@
 go 1.19
 
 use (
+	./day_five
 	./day_four
 	./day_one
 	./day_three
