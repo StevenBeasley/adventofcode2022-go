@@ -106,12 +106,13 @@ func TopElf(elves []int) int {
 func GroupElves(input []int) (elves []int) {
 	currentElf := 0
 	for _, row := range input {
-		if row == 0 {
-			elves = append(elves, currentElf)
-			currentElf = 0
-		} else {
+		if row != 0 {
 			currentElf = currentElf + row
+			continue
 		}
+
+		elves = append(elves, currentElf)
+		currentElf = 0
 	}
 
 	return elves
