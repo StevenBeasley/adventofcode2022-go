@@ -1,36 +1,52 @@
 package main
 
 import (
+	"bufio"
 	_ "embed"
 	"fmt"
+	"io"
+	"log"
+	"os"
 	"strings"
 )
 
-//go:embed input.txt
-var input string
-
-func init() {
-	// do this in init (not main) so test file has same input
-	input = strings.TrimRight(input, "\n")
-	if len(input) == 0 {
-		panic("empty input.txt file")
-	}
-}
-
 type Play struct {
-	opponent string
-	player   string
+	Opponent int
+	Player   int
 }
 
-func parseInput(input string) (parsed []Play) {
-	for _, row := range strings.Split(input, "\n") {
-		split := strings.Split(row, " ")
+func ParseFile(path string) ([]Play, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	return Parse(file)
+}
+
+func Parse(r io.Reader) (parsed []Play, err error) {
+	s := bufio.NewScanner(r)
+
+	var line int
+	for s.Scan() {
+		line++
+
+		row := strings.Fields(s.Text())
+		if len(row) < 2 {
+			return nil, fmt.Errorf("line %v has unexpected number of fields: %v", line, len(row))
+		}
+
 		parsed = append(parsed, Play{
-			opponent: split[0],
-			player:   split[1],
+			Opponent: int(row[0][0]) - 'A',
+			Player:   int(row[1][0]) - 'X',
 		})
 	}
-	return
+	if err := s.Err(); err != nil {
+		return nil, fmt.Errorf("scan: %w", err)
+	}
+
+	return parsed, nil
 }
 
 const (
@@ -44,7 +60,10 @@ const (
 )
 
 func main() {
-	parsedInput := parseInput(input)
+	parsedInput, err := ParseFile(os.Args[1])
+	if err != nil {
+		log.Fatalf("parse input: %v", err)
+	}
 
 	partOneOutput := partOne(parsedInput)
 	partTwoOutput := partTwo(parsedInput)
@@ -52,107 +71,27 @@ func main() {
 	fmt.Println(partTwoOutput)
 }
 
-func partTwo(input []Play) (totalScore int) {
-	choices := map[string]string{
-		"A": "Rock",
-		"B": "Paper",
-		"C": "Scissors",
-		"X": "Loss",
-		"Y": "Draw",
-		"Z": "Win",
-	}
-
-	scores := map[string]int{
-		"Rock":     Rock,
-		"Paper":    Paper,
-		"Scissors": Scissors,
-	}
+func partTwo(input []Play) (score int) {
+	results := [...]int{Loss, Draw, Win}
+	scores := [...]int{Rock, Paper, Scissors}
 
 	for _, play := range input {
-		score := 0
-		// convert to choices
-		result := choices[play.player]
-		opponent := choices[play.opponent]
-
-		switch result {
-		case "Win":
-			score += Win
-			switch opponent {
-			case "Rock":
-				score += scores["Paper"]
-			case "Paper":
-				score += scores["Scissors"]
-			case "Scissors":
-				score += scores["Rock"]
-			}
-		case "Loss":
-			score += Loss
-			switch opponent {
-			case "Rock":
-				score += scores["Scissors"]
-			case "Paper":
-				score += scores["Rock"]
-			case "Scissors":
-				score += scores["Paper"]
-			}
-		case "Draw":
-			score += Draw
-			score += scores[opponent]
-		}
-
-		totalScore += score
-
+		score += results[play.Player]
+		offset := (play.Player + 2) % 3
+		score += scores[(play.Opponent+offset)%len(scores)]
 	}
 
-	return totalScore
-
+	return score
 }
 
-func partOne(input []Play) (totalScore int) {
-	choices := map[string]string{
-		"A": "Rock",
-		"B": "Paper",
-		"C": "Scissors",
-		"X": "Rock",
-		"Y": "Paper",
-		"Z": "Scissors",
-	}
-	scores := map[string]int{
-		"Rock":     Rock,
-		"Paper":    Paper,
-		"Scissors": Scissors,
-	}
+func partOne(input []Play) (score int) {
+	plays := [...]int{Rock, Paper, Scissors}
+	scores := [...]int{Win, Loss, Draw, Win, Loss}
 
 	for _, play := range input {
-
-		score := 0
-		// convert to choices
-		player := choices[play.player]
-		opponent := choices[play.opponent]
-
-		score += scores[player]
-
-		if player == opponent {
-			score += Draw
-		} else {
-			switch player {
-			case "Rock":
-				if opponent == "Scissors" {
-					score += Win
-				}
-			case "Paper":
-				if opponent == "Rock" {
-					score += Win
-				}
-			case "Scissors":
-				if opponent == "Paper" {
-					score += Win
-				}
-
-			}
-		}
-		totalScore += score
+		score += plays[play.Player]
+		score += scores[play.Player-play.Opponent+2]
 	}
 
-	return totalScore
+	return score
 }
