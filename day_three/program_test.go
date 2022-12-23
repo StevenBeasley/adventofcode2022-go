@@ -88,32 +88,6 @@ func Test_findMatchingAsciiValue(t *testing.T) {
 	}
 }
 
-func Test_splitString(t *testing.T) {
-	type args struct {
-		s string
-	}
-	tests := []struct {
-		name string
-		args args
-		want []rune
-	}{
-		{
-			name: "should split this string into runes",
-			args: args{
-				s: "abcdefgh",
-			},
-			want: []rune{97, 98, 99, 100, 101, 102, 103, 104},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := splitString(tt.args.s); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("splitString() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func Test_containsString(t *testing.T) {
 	type args struct {
 		b     []rune
