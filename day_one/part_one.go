@@ -60,7 +60,7 @@ func TopThreeElves(elves []int) []int {
 func ParseFile(path string) ([]int, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("open input file: %w", err)
+		return nil, err
 	}
 	defer file.Close()
 
