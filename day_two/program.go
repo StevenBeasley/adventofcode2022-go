@@ -65,13 +65,13 @@ func main() {
 		log.Fatalf("parse input: %v", err)
 	}
 
-	partOneOutput := partOne(parsedInput)
-	partTwoOutput := partTwo(parsedInput)
+	partOneOutput := PartOne(parsedInput)
+	partTwoOutput := PartTwo(parsedInput)
 	fmt.Println(partOneOutput)
 	fmt.Println(partTwoOutput)
 }
 
-func partTwo(input []Play) (score int) {
+func PartTwo(input []Play) (score int) {
 	results := [...]int{Loss, Draw, Win}
 	scores := [...]int{Rock, Paper, Scissors}
 
@@ -84,7 +84,7 @@ func partTwo(input []Play) (score int) {
 	return score
 }
 
-func partOne(input []Play) (score int) {
+func PartOne(input []Play) (score int) {
 	results := [...]int{Win, Loss, Draw, Win, Loss}
 	scores := [...]int{Rock, Paper, Scissors}
 
