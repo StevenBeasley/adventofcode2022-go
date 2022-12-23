@@ -1,15 +1,26 @@
-package main
+package main_test
 
 import (
 	_ "embed"
-	"reflect"
+	"strings"
 	"testing"
+
+	main "github.com/StevenBeasley/adventofcode2022-go/day_one"
+	"github.com/stretchr/testify/require"
 )
 
-var parsedInput []int = parseInput(input)
-var elves []int = groupElves(parsedInput)
+var elves []int
 
-func Test_findThreeElvesWithTheMostest(t *testing.T) {
+func init() {
+	parsedInput, err := main.ParseFile("input.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	elves = main.GroupElves(parsedInput)
+}
+
+func TestTopThreeElves(t *testing.T) {
 	type args struct {
 		elves []int
 	}
@@ -35,14 +46,12 @@ func Test_findThreeElvesWithTheMostest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := findThreeElvesWithTheMostest(tt.args.elves); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("findThreeElvesWithTheMostest() = %v, want %v", got, tt.want)
-			}
+			require.Equal(t, tt.want, main.TopThreeElves(tt.args.elves))
 		})
 	}
 }
 
-func Test_parseInput(t *testing.T) {
+func TestParse(t *testing.T) {
 	type args struct {
 		input string
 	}
@@ -61,14 +70,14 @@ func Test_parseInput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := parseInput(tt.args.input); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("parseInput() = %v, want %v", got, tt.want)
-			}
+			got, err := main.Parse(strings.NewReader(tt.args.input))
+			require.Nil(t, err)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }
 
-func Test_findElfWithMostest(t *testing.T) {
+func TestTopElf(t *testing.T) {
 	type args struct {
 		elves []int
 	}
@@ -93,14 +102,12 @@ func Test_findElfWithMostest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := findElfWithMostest(tt.args.elves); got != tt.want {
-				t.Errorf("findElfWithMostest() = %v, want %v", got, tt.want)
-			}
+			require.Equal(t, tt.want, main.TopElf(tt.args.elves))
 		})
 	}
 }
 
-func Test_groupElves(t *testing.T) {
+func TestGroupElves(t *testing.T) {
 	type args struct {
 		input []int
 	}
@@ -119,9 +126,7 @@ func Test_groupElves(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := groupElves(tt.args.input); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("groupElves() = %v, want %v", got, tt.want)
-			}
+			require.Equal(t, tt.want, main.GroupElves(tt.args.input))
 		})
 	}
 }

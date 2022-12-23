@@ -52,7 +52,7 @@ func getBadgesFromGroup(currentGroup []string) (int, error) {
 	// find matching item in all groups
 	splitElves := make([][]rune, 0)
 	for _, elf := range currentGroup {
-		splitElves = append(splitElves, splitString(elf))
+		splitElves = append(splitElves, []rune(elf))
 	}
 
 	matches := make([]rune, 0)
@@ -110,8 +110,8 @@ func getAsciiValue(char rune) int {
 }
 
 func findMatchingAsciiValue(rucksack Rucksack) int {
-	a := splitString(rucksack.a)
-	b := splitString(rucksack.b)
+	a := []rune(rucksack.a)
+	b := []rune(rucksack.b)
 
 	var match rune
 
@@ -137,14 +137,6 @@ func findMatchingValues(a, b []rune) []rune {
 	return matches
 }
 
-func splitString(s string) []rune {
-	split := make([]rune, 0)
-
-	for _, c := range s {
-		split = append(split, c)
-	}
-	return split
-}
 func containsString(b []rune, aChar rune) bool {
 	for _, s := range b {
 		if s == aChar {

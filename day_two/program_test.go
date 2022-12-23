@@ -1,50 +1,63 @@
-package main
+package main_test
 
 import (
 	_ "embed"
-	"reflect"
+	"strings"
 	"testing"
+
+	main "github.com/StevenBeasley/adventofcode2022-go/day_two"
+	"github.com/stretchr/testify/require"
 )
 
-var parsed = []Play{
+var parsedInput []main.Play
+
+func init() {
+	p, err := main.ParseFile("input.txt")
+	if err != nil {
+		panic(err)
+	}
+	parsedInput = p
+}
+
+var parsed = []main.Play{
 	{
-		opponent: "B",
-		player:   "Z",
+		Opponent: 1,
+		Player:   2,
 	},
 	{
-		opponent: "B",
-		player:   "X",
+		Opponent: 1,
+		Player:   0,
 	},
 	{
-		opponent: "C",
-		player:   "Y",
+		Opponent: 2,
+		Player:   1,
 	},
 	{
-		opponent: "B",
-		player:   "Y",
+		Opponent: 1,
+		Player:   1,
 	},
 	{
-		opponent: "B",
-		player:   "Y",
+		Opponent: 1,
+		Player:   1,
 	},
 	{
-		opponent: "A",
-		player:   "X",
+		Opponent: 0,
+		Player:   0,
 	},
 	{
-		opponent: "A",
-		player:   "X",
+		Opponent: 0,
+		Player:   0,
 	},
 }
 
-func Test_parseInput(t *testing.T) {
+func TestParse(t *testing.T) {
 	type args struct {
 		input string
 	}
 	tests := []struct {
 		name       string
 		args       args
-		wantParsed []Play
+		wantParsed []main.Play
 	}{
 		{
 			name:       "Normal Input",
@@ -54,16 +67,16 @@ func Test_parseInput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotParsed := parseInput(tt.args.input); !reflect.DeepEqual(gotParsed, tt.wantParsed) {
-				t.Errorf("parseInput() = %v, want %v", gotParsed, tt.wantParsed)
-			}
+			got, err := main.Parse(strings.NewReader(tt.args.input))
+			require.Nil(t, err)
+			require.Equal(t, tt.wantParsed, got)
 		})
 	}
 }
 
-func Test_partTwo(t *testing.T) {
+func TestPartTwo(t *testing.T) {
 	type args struct {
-		input []Play
+		input []main.Play
 	}
 	tests := []struct {
 		name           string
@@ -73,7 +86,7 @@ func Test_partTwo(t *testing.T) {
 		{
 			name: "AOC input",
 			args: args{
-				input: parseInput(input),
+				input: parsedInput,
 			},
 			wantTotalScore: 12767,
 		}, {
@@ -86,16 +99,14 @@ func Test_partTwo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotTotalScore := partTwo(tt.args.input); gotTotalScore != tt.wantTotalScore {
-				t.Errorf("partTwo() = %v, want %v", gotTotalScore, tt.wantTotalScore)
-			}
+			require.Equal(t, tt.wantTotalScore, main.PartTwo(tt.args.input))
 		})
 	}
 }
 
-func Test_partOne(t *testing.T) {
+func TestPartOne(t *testing.T) {
 	type args struct {
-		input []Play
+		input []main.Play
 	}
 	tests := []struct {
 		name           string
@@ -105,7 +116,7 @@ func Test_partOne(t *testing.T) {
 		{
 			name: "AOC input",
 			args: args{
-				input: parseInput(input),
+				input: parsedInput,
 			},
 			wantTotalScore: 11666,
 		}, {
@@ -118,9 +129,7 @@ func Test_partOne(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotTotalScore := partOne(tt.args.input); gotTotalScore != tt.wantTotalScore {
-				t.Errorf("partOne() = %v, want %v", gotTotalScore, tt.wantTotalScore)
-			}
+			require.Equal(t, tt.wantTotalScore, main.PartOne(tt.args.input))
 		})
 	}
 }
