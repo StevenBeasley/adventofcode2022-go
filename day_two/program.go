@@ -85,12 +85,12 @@ func partTwo(input []Play) (score int) {
 }
 
 func partOne(input []Play) (score int) {
-	plays := [...]int{Rock, Paper, Scissors}
-	scores := [...]int{Win, Loss, Draw, Win, Loss}
+	results := [...]int{Win, Loss, Draw, Win, Loss}
+	scores := [...]int{Rock, Paper, Scissors}
 
 	for _, play := range input {
-		score += plays[play.Player]
-		score += scores[play.Player-play.Opponent+2]
+		score += scores[play.Player]
+		score += results[play.Player-play.Opponent+2]
 	}
 
 	return score
